@@ -53,23 +53,18 @@ namespace Character
             _rigidbody = GetComponentInChildren<Rigidbody2D>();
         }
 
-        private void Update()
-        {
-            
-        }
-
         private void FixedUpdate()
         {
             UpdateMovement();
             UpdateOrientation();
 
+            // |=== Falling Gravity Multiplier ===|
             if (IsPlayerGrounded != true)
             {
                 // Apply extra gravity when player is falling
                 _rigidbody.linearVelocity +=
                     Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
             }
-            
         }
 
         /// <summary>
@@ -85,8 +80,12 @@ namespace Character
             var movementX = Mathf.Clamp(speedDifferenceX, -maximumAcceleration * Time.fixedDeltaTime, accelerationRateX * Time.fixedDeltaTime);
             _rigidbody.linearVelocity = new Vector2(_rigidbody.linearVelocityX + movementX, _rigidbody.linearVelocityY);
             
-
-            IsPlayerMoving = _rigidbody.linearVelocity.magnitude != 0;
+            
+            if (_rigidbody.linearVelocity.magnitude != 0)
+            {
+                IsPlayerMoving = true;
+                currentMoveAction = MoveActionTypes.Walking;
+            }
         }
 
         /// <summary>
