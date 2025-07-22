@@ -700,6 +700,7 @@ GameObject:
   - component: {fileID: 1526526916}
   - component: {fileID: 1526526917}
   - component: {fileID: 1526526918}
+  - component: {fileID: 1526526919}
   m_Layer: 0
   m_Name: Player Character
   m_TagString: Player
@@ -876,6 +877,25 @@ MonoBehaviour:
   fallMultiplier: 2
   moveActionInput: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   jumpActionInput: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+--- !u!114 &1526526919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526526915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44b8cacb380239d42bd0f5d232ffed3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maximumHealth: 10
+  maximumStamina: 20
+  maximumResolve: 10
+  currentLevel: 1
+  healthRegenRate: 1
+  staminaRegenRate: 1
+  resolveRegenRate: 1
 --- !u!1 &2087294943
 GameObject:
   m_ObjectHideFlags: 0
