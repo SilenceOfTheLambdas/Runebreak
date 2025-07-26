@@ -1,81 +1,35 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Character
 {
+    /// <summary>
+    /// Responsible for handling the player movement.
+    /// </summary>
     public class PlayerMovementController : MonoBehaviour
     {
-        #region Variables
-        
-        public enum MoveActionTypes
-        {
-            Walking,
-            Running,
-            Rolling
-        }
-
-        public static MoveActionTypes MovementType;
-        
-        private readonly static int VelocityX = Animator.StringToHash("VelocityX");
-        private readonly static int DecelerationX = Animator.StringToHash("DecelerationX");
-        private readonly static int IsRunning = Animator.StringToHash("isRunning");
-        private readonly static int IsJumping = Animator.StringToHash("isJumping");
-        private readonly static int VelocityY = Animator.StringToHash("VelocityY");
-        private readonly static int Speed = Animator.StringToHash("Speed");
-
-        // PUBLIC
-        public MoveActionTypes currentMoveAction;
-        public bool IsPlayerMoving { get; set; }
-        public bool IsPlayerGrounded { get; set; }
-
-        [Header("Movement")]
-        
-        // [Range(0f, 1f)]
-        [SerializeField] private float maximumAcceleration;
-        [SerializeField] private float groundLinearDrag = 8f;
-        [SerializeField] private float airLinearDrag = 2.5f;
-        [SerializeField] private float groundedThreshold = 0.2f;
-
-        [SerializeField] private float deceleration;
-        [SerializeField] private float jumpAcceleration;
-        [SerializeField] private float walkingSpeed;
-        [SerializeField] private float runningSpeed;
-        [SerializeField] private float rollingSpeed;
-        [SerializeField] private int jumpHeight;
-        [SerializeField] private float fallMultiplier;
-
-        [Header("Object References")]
-        [SerializeField] private Animator playerMovementAnimator;
-        [SerializeField] private InputActionReference moveActionInput;
-        [SerializeField] private InputActionReference jumpActionInput;
-        [SerializeField] private InputActionReference sprintActionInput;
-
-        private Rigidbody2D _rigidbody;
-        private Vector2 _moveDirection;
-        private SpriteRenderer _spriteRenderer;
-        private float _currentSpeed;
-        private bool _isPlayerRunning;
-        
-        #endregion
-
         private void Start()
         {
             _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             _rigidbody = GetComponentInChildren<Rigidbody2D>();
+            _playerCombatController = GetComponent<PlayerCombatController>();
         }
 
         private void FixedUpdate()
         {
-            UpdateMovement(_isPlayerRunning ? runningSpeed : walkingSpeed);
-            UpdateOrientation();
+            // The player cannot move whilst the attack animation is playing
+            if (_playerCombatController.IsAttacking != true)
+            {
+                UpdateMovement(_isPlayerRunning ? runningSpeed : walkingSpeed);
+                UpdateOrientation();
+            }
 
             // |=== Falling Gravity Multiplier ===|
             if (IsPlayerGrounded != true)
             {
-                // Apply extra gravity when player is falling
+                // Apply extra gravity when the player is falling
                 _rigidbody.linearVelocity +=
-                    Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
+                    Vector2.up * (Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime);
             }
             playerMovementAnimator.SetFloat(VelocityY, _rigidbody.linearVelocity.normalized.y);
             
@@ -150,14 +104,21 @@ namespace Character
         /// <param name="context"></param>
         public void UpdateMoveDirection(InputAction.CallbackContext context)
         {
+            
             _moveDirection = moveActionInput.action.ReadValue<Vector2>().normalized;
             playerMovementAnimator.SetFloat(DecelerationX, 0);
         }
 
+        
+        /// <summary>
+        /// Called by the InputAction event system. When the player triggers the jump button, the rigidbodys
+        ///  velocity is updated in the Y-direction.
+        /// </summary>
+        /// <param name="context"></param>
         public void Jump(InputAction.CallbackContext context)
         {
             // Make the character jump when they press the JUMP key.
-            if (IsPlayerGrounded)
+            if (IsPlayerGrounded && context.performed)
             {
                 // Make the character jump
                 IsPlayerGrounded = false;
@@ -167,6 +128,11 @@ namespace Character
             }
         }
 
+        /// <summary>
+        /// Called by the InputAction event system. When player triggers the sprint button, the player character
+        /// will run.
+        /// </summary>
+        /// <param name="context"></param>
         public void Sprint(InputAction.CallbackContext context)
         {
             if (context.performed)
@@ -192,5 +158,59 @@ namespace Character
                     _spriteRenderer.flipX = false;
             }
         }
+        
+        #region Variables
+        
+        public enum MoveActionTypes
+        {
+            Walking,
+            Running,
+            Rolling
+        }
+
+        public static MoveActionTypes MovementType;
+        
+        private readonly static int VelocityX = Animator.StringToHash("VelocityX");
+        private readonly static int DecelerationX = Animator.StringToHash("DecelerationX");
+        private readonly static int IsRunning = Animator.StringToHash("isRunning");
+        private readonly static int IsJumping = Animator.StringToHash("isJumping");
+        private readonly static int VelocityY = Animator.StringToHash("VelocityY");
+        private readonly static int Speed = Animator.StringToHash("Speed");
+
+        // PUBLIC
+        public MoveActionTypes currentMoveAction;
+        public bool IsPlayerMoving { get; set; }
+        public bool IsPlayerGrounded { get; set; }
+
+        [Header("Movement")]
+        
+        // [Range(0f, 1f)]
+        [SerializeField] private float maximumAcceleration;
+        [SerializeField] private float groundLinearDrag = 8f;
+        [SerializeField] private float airLinearDrag = 2.5f;
+        [SerializeField] private float groundedThreshold = 0.2f;
+
+        [SerializeField] private float deceleration;
+        [SerializeField] private float jumpAcceleration;
+        [SerializeField] private float walkingSpeed;
+        [SerializeField] private float runningSpeed;
+        [SerializeField] private float rollingSpeed;
+        [SerializeField] private int jumpHeight;
+        [SerializeField] private float fallMultiplier;
+
+        [Header("Object References")]
+        [SerializeField] private Animator playerMovementAnimator;
+        [SerializeField] private InputActionReference moveActionInput;
+        [SerializeField] private InputActionReference jumpActionInput;
+        [SerializeField] private InputActionReference sprintActionInput;
+
+        private Rigidbody2D _rigidbody;
+        private Vector2 _moveDirection;
+        private SpriteRenderer _spriteRenderer;
+        private float _currentSpeed;
+        private bool _isPlayerRunning;
+        private PlayerCombatController _playerCombatController;
+
+        #endregion
     }
 }

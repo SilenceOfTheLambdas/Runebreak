@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Character
 {
@@ -20,13 +21,13 @@ namespace Character
         public float resolveRegenRate;
         
         private int _currentHealth;
-        private int _currentStamina;
+        public int CurrentStamina { get; private set; }
         private int _currentResolve;
 
         private void Start()
         {
             _currentHealth = maximumHealth;
-            _currentStamina = maximumStamina;
+            CurrentStamina = maximumStamina;
             _currentResolve = maximumResolve;
         }
 
@@ -37,6 +38,11 @@ namespace Character
         public void ReceiveDamage(int damage)
         {
             _currentHealth -= damage;
+        }
+
+        public void ExpendStamina(int amount)
+        {
+            CurrentStamina -=  amount;
         }
     }
 }
