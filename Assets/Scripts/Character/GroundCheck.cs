@@ -19,5 +19,13 @@ namespace Character
                 _playerMovementController.IsPlayerGrounded = true;
             }
         }
+
+        private void OnCollisionExit2D(Collision2D other)
+        {
+            if (other.gameObject.CompareTag("Ground"))
+            {
+                _playerMovementController.IsPlayerGrounded = false;
+            }
+        }
     }
 }

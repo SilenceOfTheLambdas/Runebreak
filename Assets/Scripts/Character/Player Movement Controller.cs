@@ -33,6 +33,9 @@ namespace Character
         
         // [Range(0f, 1f)]
         [SerializeField] private float maximumAcceleration;
+        [SerializeField] private float groundLinearDrag = 8f;
+        [SerializeField] private float airLinearDrag = 2.5f;
+        [SerializeField] private float groundedThreshold = 0.2f;
 
         [SerializeField] private float deceleration;
         [SerializeField] private float jumpAcceleration;
@@ -94,13 +97,35 @@ namespace Character
         /// </summary>
         private void UpdateMovement(float speed)
         {
-            var targetSpeedX = _moveDirection.x * speed;
+            // Only allow horizontal movement if the player is grounded or moving upward
+            var canMove = IsPlayerGrounded || _rigidbody.linearVelocityY > 0;
+            
+            var targetSpeedX = canMove ?_moveDirection.x * speed : 0f;
             var speedDifferenceX = targetSpeedX - _rigidbody.linearVelocityX;
             var accelerationRateX = (Mathf.Abs(targetSpeedX) > 0.01f) ? maximumAcceleration : deceleration;
             
-            var movementX = Mathf.Clamp(speedDifferenceX, -maximumAcceleration * Time.fixedDeltaTime, accelerationRateX * Time.fixedDeltaTime);
-            _rigidbody.linearVelocity = new Vector2(_rigidbody.linearVelocityX + movementX, _rigidbody.linearVelocityY);
-            
+            // Apply more controlled acceleration
+            var movementX = speedDifferenceX * accelerationRateX;
+            _rigidbody.AddForce(movementX * Vector2.right, ForceMode2D.Force);
+
+            // Limit horizontal speed
+            if (Mathf.Abs(_rigidbody.linearVelocityX) > speed)
+            {
+                _rigidbody.linearVelocityX = Mathf.Sign(_rigidbody.linearVelocityX) * speed;
+            }
+
+            // Apply appropriate drag based on state
+            _rigidbody.linearDamping = IsPlayerGrounded ? groundLinearDrag : airLinearDrag;
+
+            // Stop minor sliding
+            if (IsPlayerGrounded && Mathf.Abs(_moveDirection.x) < 0.01f)
+            {
+                if (Mathf.Abs(_rigidbody.linearVelocityX) < groundedThreshold)
+                {
+                    _rigidbody.linearVelocityX = 0f;
+                }
+            }
+
             if (_rigidbody.linearVelocity.magnitude != 0)
             {
                 IsPlayerMoving = true;
@@ -110,7 +135,6 @@ namespace Character
             if (IsPlayerGrounded)
             {
                 playerMovementAnimator.SetBool(IsJumping, false);
-                
 
                 if (_moveDirection.magnitude == 0)
                 {
