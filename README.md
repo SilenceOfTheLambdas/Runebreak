@@ -4,6 +4,8 @@ An RPG platfromer I'm attempting to make in Unity. I've been away from doing any
 
 [![Tasks Board](https://img.shields.io/badge/Tasks_Board-011627?style=for-the-badge&logo=notion&logoColor=C792EA)](https://telling-plant-a02.notion.site/233098dd4e168063b01bcf9eed1be552?v=233098dd4e16803abaf0000c76cc3f7e)
 
+![Runescape Movement Gameplay](/Assets/Misc/Runebreak_movement_gameplay.gif)
+
 ## Game Overview
 <details>
   
