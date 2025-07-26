@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,11 +10,13 @@ namespace Character
         {
             _rpgSystem = GetComponent<RPGSystem>();
             animator.SetFloat(SwordAttackSpeed, attackSpeed);
+            SwordAttackRange = swordAttackRange;
+            SwordDamage = swordDamage;
         }
 
         public void LateUpdate()
         {
-            CheckForAttackAnimationEnd.OnAnimationEnd += () =>
+            PlayerCombatAnimationState.OnCombatAnimationEnd += () =>
             {
                 IsAttacking = false;
             };
@@ -35,18 +38,28 @@ namespace Character
                 _rpgSystem.ExpendStamina(swordAttackStaminaCost);
             }
         }
-        
+
         private readonly static int Attack = Animator.StringToHash("swordAttack");
         private readonly static int SwordAttackSpeed = Animator.StringToHash("swordAttackSpeed");
 
         [Header("Attack Properties")]
         public bool IsAttacking { get; private set; }
         
+        public float SwordAttackRange { get; private set; }
+        
+        public int SwordDamage { get; private set; }
+        
         [SerializeField]
         private int swordAttackStaminaCost;
 
         [SerializeField]
         private float attackSpeed;
+
+        [SerializeField]
+        private float swordAttackRange;
+        
+        [SerializeField]
+        private int swordDamage;
         
         [Header("Object References")]
         

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Character
 {
@@ -38,6 +37,7 @@ namespace Character
         public void ReceiveDamage(int damage)
         {
             _currentHealth -= damage;
+            Debug.Log("Ouch! Taken: " + damage + " damage.");
         }
 
         public void ExpendStamina(int amount)

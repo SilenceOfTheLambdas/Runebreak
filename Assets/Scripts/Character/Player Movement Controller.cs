@@ -104,7 +104,6 @@ namespace Character
         /// <param name="context"></param>
         public void UpdateMoveDirection(InputAction.CallbackContext context)
         {
-            
             _moveDirection = moveActionInput.action.ReadValue<Vector2>().normalized;
             playerMovementAnimator.SetFloat(DecelerationX, 0);
         }
@@ -153,9 +152,15 @@ namespace Character
             if (_rigidbody.linearVelocity.magnitude > 0)
             {
                 if (_moveDirection.x < 0)
+                {
                     _spriteRenderer.flipX = true;
+                    PlayerFacingDirection = Vector2.left;
+                }
                 else if (_moveDirection.x > 0)
+                {
                     _spriteRenderer.flipX = false;
+                    PlayerFacingDirection = Vector2.right;
+                }
             }
         }
         
@@ -182,6 +187,8 @@ namespace Character
         public bool IsPlayerMoving { get; set; }
         public bool IsPlayerGrounded { get; set; }
 
+        public Vector2 PlayerFacingDirection { get; private set; }
+
         [Header("Movement")]
         
         // [Range(0f, 1f)]
@@ -189,7 +196,6 @@ namespace Character
         [SerializeField] private float groundLinearDrag = 8f;
         [SerializeField] private float airLinearDrag = 2.5f;
         [SerializeField] private float groundedThreshold = 0.2f;
-
         [SerializeField] private float deceleration;
         [SerializeField] private float jumpAcceleration;
         [SerializeField] private float walkingSpeed;
