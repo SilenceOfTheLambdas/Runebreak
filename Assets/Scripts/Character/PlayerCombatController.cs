@@ -19,10 +19,10 @@ namespace Character
             PlayerCombatAnimationState.OnCombatAnimationEnd += () =>
             {
                 IsAttacking = false;
-                
-                // Start a timer
-                _startComboTimer = true;
-                _comboAttackTimer = maxComboAttackTime;
+
+                // // Start a timer
+                // _startComboTimer = true;
+                // _comboAttackTimer = maxComboAttackTime;
             };
 
             if (_startComboTimer)
@@ -33,9 +33,10 @@ namespace Character
                 {
                     _startComboTimer = false;
                     _comboAttackTimer = maxComboAttackTime;
+                    animator.SetTrigger(ComboFailed);
+                    IsAttacking = false;
                 }
             }
-            
         }
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace Character
         /// <param name="context"></param>
         public void SwordAttack(InputAction.CallbackContext context)
         {
-            if (_rpgSystem.CurrentStamina >= swordAttackStaminaCost && context.performed && IsAttacking == false)
+            if (_rpgSystem.CurrentStamina >= swordAttackStaminaCost && context.performed /*&& IsAttacking == false*/)
             {
                 if (_startComboTimer)
                 {
@@ -54,18 +55,17 @@ namespace Character
                         case SwordAttackState.FirstAttack:
                             _swordAttackState = SwordAttackState.SecondAttack;
                             // DO SECOND THE ATTACK
-                            CarryOutSwordAttack(Attack, swordAttackStaminaCost, SwordAttackState.SecondAttack);
+                            CarryOutSwordAttack(ComboAttack1, swordAttackStaminaCost, SwordAttackState.SecondAttack);
                             return;
                         case SwordAttackState.SecondAttack:
                             _swordAttackState = SwordAttackState.ThirdAttack;
                             // DO THE THIRD ATTACK
-                            CarryOutSwordAttack(Attack, swordAttackStaminaCost, SwordAttackState.ThirdAttack);
+                            CarryOutSwordAttack(ComboAttack2, swordAttackStaminaCost, SwordAttackState.ThirdAttack);
                             return;
                         case SwordAttackState.ThirdAttack:
                             _swordAttackState = SwordAttackState.FirstAttack;
-                            CarryOutSwordAttack(Attack, swordAttackStaminaCost, SwordAttackState.FirstAttack);
+                            CarryOutSwordAttack(ComboAttack3, swordAttackStaminaCost, SwordAttackState.FirstAttack);
                             return;
-                            
                     }
                 }
                 else // FIRST ATTACK
@@ -78,14 +78,41 @@ namespace Character
 
         private void CarryOutSwordAttack(int animationID, int staminaCost, SwordAttackState stateToSwitchTo)
         {
-            animator.SetTrigger(animationID);
+            // Start a timer
+            _comboAttackTimer = maxComboAttackTime;
+            _startComboTimer = true;
             IsAttacking = true;
+
+            animator.SetTrigger(animationID);
             _swordAttackState = stateToSwitchTo;
 
             // Expend stamina
             _rpgSystem.ExpendStamina(staminaCost);
-            
-            Debug.Log("Carrying out " + stateToSwitchTo.ToString());
+
+
+            // TODO: DEBUGying out " + stateToSwitchTo);
+        }
+
+        /// <summary>
+        /// Calculates the amount of damage the player will deal to an enemy based on the state of the attack combo
+        /// if the player is in one.
+        /// </summary>
+        /// <returns>Returns an Int value representing the damage, will default to base sword damage if not in
+        /// a combat combo.</returns>
+        public int CalculateSwordAttackDamage()
+        {
+            switch (_swordAttackState)
+            {
+                case SwordAttackState.None:
+                    break;
+                case SwordAttackState.FirstAttack:
+                    return ComboAttack1Damage;
+                case SwordAttackState.SecondAttack:
+                    return ComboAttack2Damage;
+                case SwordAttackState.ThirdAttack:
+                    return ComboAttack3Damage;
+            }
+            return SwordDamage;
         }
 
         private enum SwordAttackState
@@ -98,19 +125,29 @@ namespace Character
         }
 
         private SwordAttackState _swordAttackState;
-        private float _comboAttackTimer = 0f;
-        private bool _startComboTimer = false;
-        
+        private float _comboAttackTimer;
+        private bool _startComboTimer;
+
         private readonly static int Attack = Animator.StringToHash("swordAttack");
         private readonly static int SwordAttackSpeed = Animator.StringToHash("swordAttackSpeed");
+        private readonly static int ComboAttack1 = Animator.StringToHash("combo1");
+        private readonly static int ComboAttack2 = Animator.StringToHash("combo2");
+        private readonly static int ComboAttack3 = Animator.StringToHash("combo3");
+        private readonly static int ComboFailed = Animator.StringToHash("comboFailed");
 
         [Header("Attack Properties")]
         public bool IsAttacking { get; private set; }
-        
+
         public float SwordAttackRange { get; private set; }
-        
+
         public int SwordDamage { get; private set; }
-        
+
+        [Header("Attack Combo")]
+
+        public int ComboAttack1Damage;
+        public int ComboAttack2Damage;
+        public int ComboAttack3Damage;
+
         [SerializeField]
         private int swordAttackStaminaCost;
 
@@ -122,10 +159,10 @@ namespace Character
 
         [SerializeField]
         private float swordAttackRange;
-        
+
         [SerializeField]
         private int swordDamage;
-        
+
         [Header("Object References")]
         
         [SerializeField] 
@@ -133,7 +170,7 @@ namespace Character
 
         [SerializeField]
         private Animator animator;
-        
+
         private RPGSystem _rpgSystem;
     }
 }
