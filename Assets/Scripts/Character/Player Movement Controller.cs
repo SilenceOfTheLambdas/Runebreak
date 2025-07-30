@@ -7,7 +7,7 @@ namespace Character
     /// Responsible for handling the player movement.
     /// </summary>
     public class PlayerMovementController : MonoBehaviour
-    {
+    { 
         private void Start()
         {
             _spriteRenderer = GetComponentInChildren<SpriteRenderer>();

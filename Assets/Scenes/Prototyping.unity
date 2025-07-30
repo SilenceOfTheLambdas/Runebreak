@@ -588,7 +588,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 2.8229167
+  orthographic size: 2.90625
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -905,7 +905,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &952373898
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1227,6 +1227,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   swordAttackStaminaCost: 0
   attackSpeed: 1
+  maxComboAttackTime: 3
   swordAttackRange: 1
   swordDamage: 10
   swordAttackInputAction: {fileID: 1120369429361536294, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
