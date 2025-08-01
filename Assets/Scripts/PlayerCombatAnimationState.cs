@@ -22,11 +22,11 @@ public class PlayerCombatAnimationState : StateMachineBehaviour
         
         RaycastHit2D hit = Physics2D.Raycast(playerPosition, 
             _playerMovementController.PlayerFacingDirection * _playerCombatController.SwordAttackRange, 
-            _playerCombatController.SwordAttackRange, LayerMask.GetMask("Hitable"));
+            _playerCombatController.SwordAttackRange, LayerMask.GetMask("Hittable"));
         
         if (hit.collider != null && hit.collider.CompareTag("Enemy"))
         {
-            hit.collider.GetComponent<RPGSystem>().ReceiveDamage(_playerCombatController.SwordDamage);
+            hit.collider.GetComponent<RPGSystem>().ReceiveDamage(_playerCombatController.CalculateSwordAttackDamage());
         }
     }
 

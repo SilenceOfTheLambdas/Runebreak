@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,7 +10,6 @@ namespace Character
             _rpgSystem = GetComponent<RPGSystem>();
             animator.SetFloat(SwordAttackSpeed, attackSpeed);
             SwordAttackRange = swordAttackRange;
-            SwordDamage = swordDamage;
         }
 
         public void LateUpdate()
@@ -19,19 +17,15 @@ namespace Character
             PlayerCombatAnimationState.OnCombatAnimationEnd += () =>
             {
                 IsAttacking = false;
-
-                // // Start a timer
-                // _startComboTimer = true;
-                // _comboAttackTimer = maxComboAttackTime;
             };
 
-            if (_startComboTimer)
+            if (_isWithinComboAttackTimingRange)
             {
                 // Check for input whilst in the combo timer period
                 _comboAttackTimer -= Time.deltaTime;
                 if (_comboAttackTimer <= 0.001f)
                 {
-                    _startComboTimer = false;
+                    _isWithinComboAttackTimingRange = false;
                     _comboAttackTimer = maxComboAttackTime;
                     animator.SetTrigger(ComboFailed);
                     IsAttacking = false;
@@ -46,89 +40,88 @@ namespace Character
         /// <param name="context"></param>
         public void SwordAttack(InputAction.CallbackContext context)
         {
-            if (_rpgSystem.CurrentStamina >= swordAttackStaminaCost && context.performed /*&& IsAttacking == false*/)
+            if (_rpgSystem.CurrentStamina >= swordAttackStaminaCost && context.performed)
             {
-                if (_startComboTimer)
+                if (_isWithinComboAttackTimingRange)
                 {
-                    switch (_swordAttackState)
+                    switch (_nextSwordAttackState)
                     {
-                        case SwordAttackState.FirstAttack:
-                            _swordAttackState = SwordAttackState.SecondAttack;
-                            // DO SECOND THE ATTACK
-                            CarryOutSwordAttack(ComboAttack1, swordAttackStaminaCost, SwordAttackState.SecondAttack);
-                            return;
                         case SwordAttackState.SecondAttack:
-                            _swordAttackState = SwordAttackState.ThirdAttack;
                             // DO THE THIRD ATTACK
-                            CarryOutSwordAttack(ComboAttack2, swordAttackStaminaCost, SwordAttackState.ThirdAttack);
+                            CarryOutSwordAttack(ComboAttack2, swordAttackStaminaCost, SwordAttackState.SecondAttack, SwordAttackState.ThirdAttack);
                             return;
                         case SwordAttackState.ThirdAttack:
-                            _swordAttackState = SwordAttackState.FirstAttack;
-                            CarryOutSwordAttack(ComboAttack3, swordAttackStaminaCost, SwordAttackState.FirstAttack);
+                            CarryOutSwordAttack(ComboAttack3, swordAttackStaminaCost, SwordAttackState.ThirdAttack, SwordAttackState.FirstAttack);
                             return;
                     }
                 }
-                else // FIRST ATTACK
+                else
                 {
-                    _swordAttackState = SwordAttackState.None;
-                    CarryOutSwordAttack(Attack, swordAttackStaminaCost, SwordAttackState.FirstAttack);
+                    CarryOutSwordAttack(ComboAttack1, swordAttackStaminaCost, SwordAttackState.FirstAttack, SwordAttackState.SecondAttack);
                 }
             }
         }
 
-        private void CarryOutSwordAttack(int animationID, int staminaCost, SwordAttackState stateToSwitchTo)
+        /// <summary>
+        /// Executes a sword attack, updating the player's state, triggering animations, and managing stamina.
+        /// </summary>
+        /// <param name="animationID">The ID of the animation to trigger for this attack.</param>
+        /// <param name="staminaCost">The amount of stamina to be expended for this attack.</param>
+        /// <param name="currentAttackState">The current attack state.</param>
+        /// <param name="stateToSwitchTo">The new SwordAttackState to transition to after this attack.</param>
+        /// <remarks>
+        /// This method starts a combo timer, sets the player's attacking state, triggers the appropriate animation,
+        /// updates the sword attack state, and expends the required stamina.
+        /// </remarks>
+        private void CarryOutSwordAttack(int animationID, int staminaCost, SwordAttackState currentAttackState , SwordAttackState stateToSwitchTo)
         {
-            // Start a timer
-            _comboAttackTimer = maxComboAttackTime;
-            _startComboTimer = true;
-            IsAttacking = true;
-
+            // Trigger the animation
             animator.SetTrigger(animationID);
-            _swordAttackState = stateToSwitchTo;
-
+            
             // Expend stamina
             _rpgSystem.ExpendStamina(staminaCost);
 
+            // Start a timer
+            IsAttacking = true;
+            _comboAttackTimer = maxComboAttackTime;
+            _isWithinComboAttackTimingRange = true;
 
-            // TODO: DEBUGying out " + stateToSwitchTo);
+            _currentAttackState = currentAttackState;
+            // Queue the next attack state
+            _nextSwordAttackState = stateToSwitchTo;
         }
 
         /// <summary>
         /// Calculates the amount of damage the player will deal to an enemy based on the state of the attack combo
-        /// if the player is in one.
+        /// if the player is in one. The actual damage done will be the state + 1 e.g. <c>FirstAttack => ComboAttack3Damage </c>.
+        /// This is an acyclic system.
         /// </summary>
         /// <returns>Returns an Int value representing the damage, will default to base sword damage if not in
         /// a combat combo.</returns>
         public int CalculateSwordAttackDamage()
         {
-            switch (_swordAttackState)
+            return _currentAttackState switch
             {
-                case SwordAttackState.None:
-                    break;
-                case SwordAttackState.FirstAttack:
-                    return ComboAttack1Damage;
-                case SwordAttackState.SecondAttack:
-                    return ComboAttack2Damage;
-                case SwordAttackState.ThirdAttack:
-                    return ComboAttack3Damage;
-            }
-            return SwordDamage;
+                SwordAttackState.FirstAttack => ComboAttack1Damage,
+                SwordAttackState.SecondAttack => ComboAttack2Damage,
+                SwordAttackState.ThirdAttack => ComboAttack3Damage,
+                _ => ComboAttack1Damage
+            };
         }
 
         private enum SwordAttackState
         {
             // We have not attacked yet.
-            None,
-            FirstAttack,
-            SecondAttack,
-            ThirdAttack
+            FirstAttack = 1,
+            SecondAttack = 2,
+            ThirdAttack = 3
         }
 
-        private SwordAttackState _swordAttackState;
+        private SwordAttackState _nextSwordAttackState;
+        private SwordAttackState _currentAttackState;
         private float _comboAttackTimer;
-        private bool _startComboTimer;
+        private bool _isWithinComboAttackTimingRange;
 
-        private readonly static int Attack = Animator.StringToHash("swordAttack");
         private readonly static int SwordAttackSpeed = Animator.StringToHash("swordAttackSpeed");
         private readonly static int ComboAttack1 = Animator.StringToHash("combo1");
         private readonly static int ComboAttack2 = Animator.StringToHash("combo2");
@@ -139,8 +132,6 @@ namespace Character
         public bool IsAttacking { get; private set; }
 
         public float SwordAttackRange { get; private set; }
-
-        public int SwordDamage { get; private set; }
 
         [Header("Attack Combo")]
 
