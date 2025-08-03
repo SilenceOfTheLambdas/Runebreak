@@ -25,6 +25,7 @@ namespace Character
                 _playerMovementController.PlayerFacingDirection * _playerCombatController.SwordAttackRange,
                 _playerCombatController.SwordAttackRange, LayerMask.GetMask("Hittable"));
 
+            // THIS IS WHERE THE HIT OCCURS
             if (hit.collider != null && hit.collider.CompareTag("Enemy"))
             {
                 hit.collider.GetComponent<RPGSystem>().ReceiveDamage(_playerCombatController.CalculateSwordAttackDamage());
