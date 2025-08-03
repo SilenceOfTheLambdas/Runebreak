@@ -291,6 +291,7 @@ GameObject:
   m_Component:
   - component: {fileID: 204068209}
   - component: {fileID: 204068210}
+  - component: {fileID: 204068211}
   m_Layer: 8
   m_Name: Sprite
   m_TagString: Untagged
@@ -368,6 +369,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &204068211
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204068208}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2b0ebd06b28d58c45893d1880079631f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &276090921
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,7 +402,6 @@ GameObject:
   - component: {fileID: 276090922}
   - component: {fileID: 276090924}
   - component: {fileID: 276090923}
-  - component: {fileID: 276090925}
   m_Layer: 8
   m_Name: Prototype Enemy
   m_TagString: Enemy
@@ -459,28 +481,6 @@ MonoBehaviour:
   healthRegenRate: 0.01
   staminaRegenRate: 0.01
   resolveRegenRate: 0.01
---- !u!95 &276090925
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 276090921}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 2b0ebd06b28d58c45893d1880079631f, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -588,7 +588,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 3.1458333
+  orthographic size: 2.6145833
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
