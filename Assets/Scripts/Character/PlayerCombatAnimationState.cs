@@ -28,7 +28,8 @@ namespace Character
             // THIS IS WHERE THE HIT OCCURS
             if (hit.collider != null && hit.collider.CompareTag("Enemy"))
             {
-                hit.collider.GetComponent<RPGSystem>().ReceiveDamage(_playerCombatController.CalculateSwordAttackDamage());
+                hit.collider.GetComponent<RPGSystem>()
+                    .ReceiveDamage(_playerCombatController.CalculateSwordAttackDamage(), stateInfo.length);
             }
         }
 

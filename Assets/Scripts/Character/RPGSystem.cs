@@ -40,10 +40,11 @@ namespace Character
         /// Deals x amount of damage to this character. This function will also for player death.
         /// </summary>
         /// <param name="damage">The amount of damage to take.</param>
-        public void ReceiveDamage(int damage)
+        /// <param name="attackLength">The length of the attack animation.</param>
+        public void ReceiveDamage(int damage, float attackLength)
         {
             _currentHealth -= damage;
-            _combatAnimatorController.RecievedHit();
+            _combatAnimatorController.RecievedHit(ref attackLength);
         }
 
         public void ExpendStamina(int amount)
