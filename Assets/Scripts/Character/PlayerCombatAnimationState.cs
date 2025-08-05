@@ -15,22 +15,6 @@ namespace Character
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             OnCombatAnimationStart?.Invoke();
-
-            _playerMovementController = animator.GetComponentInParent<PlayerMovementController>();
-            _playerCombatController = animator.GetComponentInParent<PlayerCombatController>();
-
-            var playerPosition = animator.gameObject.transform.position;
-
-            RaycastHit2D hit = Physics2D.Raycast(playerPosition,
-                _playerMovementController.PlayerFacingDirection * _playerCombatController.SwordAttackRange,
-                _playerCombatController.SwordAttackRange, LayerMask.GetMask("Hittable"));
-
-            // THIS IS WHERE THE HIT OCCURS
-            if (hit.collider != null && hit.collider.CompareTag("Enemy"))
-            {
-                hit.collider.GetComponent<RPGSystem>()
-                    .ReceiveDamage(_playerCombatController.CalculateSwordAttackDamage(), stateInfo.length);
-            }
         }
 
         // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

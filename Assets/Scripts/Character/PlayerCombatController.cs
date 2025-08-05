@@ -38,7 +38,7 @@ namespace Character
         /// Triggers an attack and plays corresponding animation only if the player has enough stamina.
         /// </summary>
         /// <param name="context"></param>
-        public void SwordAttack(InputAction.CallbackContext context)
+        public void StartSwordAttack(InputAction.CallbackContext context)
         {
             if (_rpgSystem.CurrentStamina >= swordAttackStaminaCost && context.performed)
             {
@@ -48,18 +48,57 @@ namespace Character
                     {
                         case SwordAttackState.SecondAttack:
                             // DO THE THIRD ATTACK
-                            CarryOutSwordAttack(ComboAttack2, swordAttackStaminaCost, SwordAttackState.SecondAttack, SwordAttackState.ThirdAttack);
+                            StartAttackAnimation_SwitchComboState(ComboAttack2, 
+                                swordAttackStaminaCost, SwordAttackState.SecondAttack, SwordAttackState.ThirdAttack);
                             return;
                         case SwordAttackState.ThirdAttack:
-                            CarryOutSwordAttack(ComboAttack3, swordAttackStaminaCost, SwordAttackState.ThirdAttack, SwordAttackState.FirstAttack);
+                            StartAttackAnimation_SwitchComboState(ComboAttack3, 
+                                swordAttackStaminaCost, SwordAttackState.ThirdAttack, SwordAttackState.FirstAttack);
                             return;
                     }
                 }
                 else
                 {
-                    CarryOutSwordAttack(ComboAttack1, swordAttackStaminaCost, SwordAttackState.FirstAttack, SwordAttackState.SecondAttack);
+                    StartAttackAnimation_SwitchComboState(ComboAttack1, 
+                        swordAttackStaminaCost, SwordAttackState.FirstAttack, SwordAttackState.SecondAttack);
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks for a valid enemy within the player's attack range and applies damage if found.
+        /// </summary>
+        /// <remarks>
+        /// This method performs a raycast in the direction the player is facing to detect enemies.
+        /// If an enemy is found within range, it applies damage to the enemy and triggers a hit animation.
+        /// </remarks>
+        /// <returns>
+        /// Returns true if a valid enemy was found and damaged, false otherwise.
+        /// </returns>
+        public bool CheckForValidEnemyInRange_DoDamageToEnemy()
+        {
+            // TODO: Create properties for these
+            var playerMovementController = animator.GetComponentInParent<PlayerMovementController>();
+            var playerCombatController = animator.GetComponentInParent<PlayerCombatController>();
+
+            var playerPosition = animator.gameObject.transform.position;
+
+            RaycastHit2D hit = Physics2D.Raycast(playerPosition,
+                playerMovementController.PlayerFacingDirection * playerCombatController.SwordAttackRange,
+                playerCombatController.SwordAttackRange, LayerMask.GetMask("Hittable"));
+
+            // THIS IS WHERE THE HIT OCCURS
+            if (hit.collider != null && hit.collider.CompareTag("Enemy"))
+            {
+                // DAMAGE IS DONE HERE
+                var enemyRPGSystem = hit.collider.GetComponent<RPGSystem>();
+                enemyRPGSystem.ReceiveDamage(playerCombatController.CalculateSwordAttackDamage());
+                enemyRPGSystem.PlayHittedAnimation();
+                
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -73,7 +112,7 @@ namespace Character
         /// This method starts a combo timer, sets the player's attacking state, triggers the appropriate animation,
         /// updates the sword attack state, and expends the required stamina.
         /// </remarks>
-        private void CarryOutSwordAttack(int animationID, int staminaCost, SwordAttackState currentAttackState , SwordAttackState stateToSwitchTo)
+        private void StartAttackAnimation_SwitchComboState(int animationID, int staminaCost, SwordAttackState currentAttackState , SwordAttackState stateToSwitchTo)
         {
             // Trigger the animation
             animator.SetTrigger(animationID);
@@ -98,7 +137,7 @@ namespace Character
         /// </summary>
         /// <returns>Returns an Int value representing the damage, will default to base sword damage if not in
         /// a combat combo.</returns>
-        public int CalculateSwordAttackDamage()
+        private int CalculateSwordAttackDamage()
         {
             return _currentAttackState switch
             {

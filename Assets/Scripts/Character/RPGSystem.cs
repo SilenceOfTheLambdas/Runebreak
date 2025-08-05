@@ -1,10 +1,47 @@
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Character
 {
-    [RequireComponent(typeof(CombatAnimatorController))]
     public class RPGSystem : MonoBehaviour
     {
+        private void Start()
+        {
+            _currentHealth = maximumHealth;
+            CurrentStamina = maximumStamina;
+            _currentResolve = maximumResolve;
+            _animator = GetComponentInChildren<Animator>();
+            
+            Assert.IsNotNull(_animator, "The character must have an Animator component as a child.");
+        }
+
+        /// <summary>
+        /// Deals x amount of damage to this character. This function will also for player death.
+        /// </summary>
+        /// <param name="damage">The amount of damage to take.</param>
+        public void ReceiveDamage(int damage)
+        {
+            _currentHealth -= damage;
+        }
+
+        /// <summary>
+        /// Plays the animation for when the character is hit.
+        /// </summary>
+        /// <remarks>
+        /// This method triggers the "hasBeenHit" animation using the character's animator component.
+        /// </remarks>
+        public void PlayHittedAnimation()
+        {
+            _animator.SetTrigger(HasBeenHit);
+        }
+
+        public void ExpendStamina(int amount)
+        {
+            CurrentStamina -= amount;
+        }
+        
+        private readonly static int HasBeenHit = Animator.StringToHash("hasBeenHit");
+
         [Header("Core Stats")]
         public int maximumHealth = 10;
         public int maximumStamina = 20;
@@ -26,30 +63,6 @@ namespace Character
         private int _currentHealth;
         public int CurrentStamina { get; private set; }
         private int _currentResolve;
-        private CombatAnimatorController _combatAnimatorController;
-
-        private void Start()
-        {
-            _currentHealth = maximumHealth;
-            CurrentStamina = maximumStamina;
-            _currentResolve = maximumResolve;
-            _combatAnimatorController = GetComponent<CombatAnimatorController>();
-        }
-
-        /// <summary>
-        /// Deals x amount of damage to this character. This function will also for player death.
-        /// </summary>
-        /// <param name="damage">The amount of damage to take.</param>
-        /// <param name="attackLength">The length of the attack animation.</param>
-        public void ReceiveDamage(int damage, float attackLength)
-        {
-            _currentHealth -= damage;
-            _combatAnimatorController.RecievedHit(ref attackLength);
-        }
-
-        public void ExpendStamina(int amount)
-        {
-            CurrentStamina -= amount;
-        }
+        private Animator _animator;
     }
 }
