@@ -402,7 +402,6 @@ GameObject:
   - component: {fileID: 276090922}
   - component: {fileID: 276090924}
   - component: {fileID: 276090923}
-  - component: {fileID: 276090925}
   m_Layer: 8
   m_Name: Prototype Enemy
   m_TagString: Enemy
@@ -482,18 +481,6 @@ MonoBehaviour:
   healthRegenRate: 0.01
   staminaRegenRate: 0.01
   resolveRegenRate: 0.01
---- !u!114 &276090925
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 276090921}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e55743431a55a68081316d49c6b2f10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,7 +588,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 2.90625
+  orthographic size: 3.2395833
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1002,7 +989,6 @@ GameObject:
   - component: {fileID: 1526526918}
   - component: {fileID: 1526526919}
   - component: {fileID: 1526526920}
-  - component: {fileID: 1526526921}
   m_Layer: 7
   m_Name: Player Character
   m_TagString: Player
@@ -1244,23 +1230,11 @@ MonoBehaviour:
   ComboAttack3Damage: 8
   swordAttackStaminaCost: 0
   attackSpeed: 1
-  maxComboAttackTime: 0.8
+  maxComboAttackTime: 1
   swordAttackRange: 1
   swordDamage: 2
   swordAttackInputAction: {fileID: 1120369429361536294, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   animator: {fileID: 2087294946}
---- !u!114 &1526526921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1526526915}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e55743431a55a68081316d49c6b2f10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1848117939
 GameObject:
   m_ObjectHideFlags: 0
@@ -1438,6 +1412,7 @@ GameObject:
   - component: {fileID: 2087294947}
   - component: {fileID: 2087294949}
   - component: {fileID: 2087294950}
+  - component: {fileID: 2087294951}
   m_Layer: 7
   m_Name: Character Sprite
   m_TagString: Player
@@ -1602,8 +1577,8 @@ BoxCollider2D:
   m_Offset: {x: 0.014239244, y: 0.030000001}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.33, y: 0.35}
-    oldSize: {x: 2.6666667, y: 1.3333334}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1.3333334, y: 1.3333334}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1633,6 +1608,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: efd641a1ceb684245b2f0800701272db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2087294951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2087294943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f2628192ced8414c878f448360a990b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807

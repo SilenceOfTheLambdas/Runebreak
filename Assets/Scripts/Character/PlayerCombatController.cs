@@ -18,19 +18,6 @@ namespace Character
             {
                 IsAttacking = false;
             };
-
-            if (_isWithinComboAttackTimingRange)
-            {
-                // Check for input whilst in the combo timer period
-                _comboAttackTimer -= Time.deltaTime;
-                if (_comboAttackTimer <= 0.001f)
-                {
-                    _isWithinComboAttackTimingRange = false;
-                    _comboAttackTimer = maxComboAttackTime;
-                    animator.SetTrigger(ComboFailed);
-                    IsAttacking = false;
-                }
-            }
         }
 
         /// <summary>
@@ -119,15 +106,26 @@ namespace Character
             
             // Expend stamina
             _rpgSystem.ExpendStamina(staminaCost);
-
-            // Start a timer
+            
             IsAttacking = true;
-            _comboAttackTimer = maxComboAttackTime;
-            _isWithinComboAttackTimingRange = true;
 
             _currentAttackState = currentAttackState;
             // Queue the next attack state
             _nextSwordAttackState = stateToSwitchTo;
+        }
+
+        public void StartComboAttackTimer()
+        {
+            _comboAttackTimer = maxComboAttackTime;
+            _isWithinComboAttackTimingRange = true;
+        }
+
+        public void EndComboAttackTimer()
+        {
+            _isWithinComboAttackTimingRange = false;
+            _comboAttackTimer = maxComboAttackTime;
+            animator.SetTrigger(ComboFailed);
+            IsAttacking = false;
         }
 
         /// <summary>
@@ -160,6 +158,9 @@ namespace Character
         private SwordAttackState _currentAttackState;
         private float _comboAttackTimer;
         private bool _isWithinComboAttackTimingRange;
+
+        [HideInInspector]
+        public bool isPlayingAttackAnimation;
 
         private readonly static int SwordAttackSpeed = Animator.StringToHash("swordAttackSpeed");
         private readonly static int ComboAttack1 = Animator.StringToHash("combo1");
