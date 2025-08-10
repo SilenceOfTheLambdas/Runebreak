@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
 
 namespace Character
@@ -8,8 +9,12 @@ namespace Character
         public void Start()
         {
             _rpgSystem = GetComponent<RPGSystem>();
+            _playerMovementController = GetComponent<PlayerMovementController>();
             animator.SetFloat(SwordAttackSpeed, attackSpeed);
             SwordAttackRange = swordAttackRange;
+            
+            Assert.IsNotNull(_rpgSystem, "No RPGSystem component found on the player.");
+            Assert.IsNotNull(_playerMovementController, "No PlayerMovementController component found on the player.");
         }
 
         public void LateUpdate()
@@ -114,6 +119,25 @@ namespace Character
             _nextSwordAttackState = stateToSwitchTo;
         }
 
+        /// Starts the blocking behaviour and corresponding animation. This function is called by
+        /// the InputManager events system.
+        public void StartBlocking(InputAction.CallbackContext context)
+        {
+            if (context.performed && GetComponent<PlayerMovementController>().IsPlayerGrounded)
+            {
+                animator.SetTrigger(Blocking);
+                animator.SetBool(IsBlocking, true);
+                isBlocking = true;
+            }
+            
+            if (context.canceled)
+            {
+                animator.ResetTrigger(Blocking);
+                animator.SetBool(IsBlocking, false);
+                isBlocking = false;
+            }
+        }
+
         public void StartComboAttackTimer()
         {
             _comboAttackTimer = maxComboAttackTime;
@@ -148,7 +172,6 @@ namespace Character
 
         private enum SwordAttackState
         {
-            // We have not attacked yet.
             FirstAttack = 1,
             SecondAttack = 2,
             ThirdAttack = 3
@@ -156,17 +179,21 @@ namespace Character
 
         private SwordAttackState _nextSwordAttackState;
         private SwordAttackState _currentAttackState;
+        private PlayerMovementController _playerMovementController;
         private float _comboAttackTimer;
         private bool _isWithinComboAttackTimingRange;
 
-        [HideInInspector]
-        public bool isPlayingAttackAnimation;
+        [HideInInspector] public bool isPlayingAttackAnimation;
+
+        [HideInInspector] public bool isBlocking;
 
         private readonly static int SwordAttackSpeed = Animator.StringToHash("swordAttackSpeed");
         private readonly static int ComboAttack1 = Animator.StringToHash("combo1");
         private readonly static int ComboAttack2 = Animator.StringToHash("combo2");
         private readonly static int ComboAttack3 = Animator.StringToHash("combo3");
         private readonly static int ComboFailed = Animator.StringToHash("comboFailed");
+        private readonly static int Blocking = Animator.StringToHash("startBlocking");
+        private readonly static int IsBlocking = Animator.StringToHash("isBlocking");
 
         [Header("Attack Properties")]
         public bool IsAttacking { get; private set; }

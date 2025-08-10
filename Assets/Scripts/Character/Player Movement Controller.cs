@@ -17,12 +17,15 @@ namespace Character
 
         private void FixedUpdate()
         {
-            // The player cannot move whilst the attack animation is playing
-            if (_playerCombatController.IsAttacking != true)
-            {
-                UpdateMovement(_isPlayerRunning ? runningSpeed : walkingSpeed);
-                UpdateOrientation();
-            }
+            // The player cannot move whilst the attack animation is playing or blocking
+            if (_playerCombatController.isBlocking)
+                return;
+            if (_playerCombatController.IsAttacking)
+                return;
+            
+            UpdateMovement(_isPlayerRunning ? runningSpeed : walkingSpeed);
+            UpdateOrientation();
+            
 
             // |=== Falling Gravity Multiplier ===|
             if (IsPlayerGrounded != true)
