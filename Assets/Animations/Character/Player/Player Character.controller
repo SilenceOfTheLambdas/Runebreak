@@ -154,7 +154,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: isBlocking
+    m_ConditionEvent: startBlocking
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 7231197345858351023}
   m_DstState: {fileID: 0}

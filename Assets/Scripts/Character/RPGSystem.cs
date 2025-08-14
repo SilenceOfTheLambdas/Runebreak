@@ -1,3 +1,5 @@
+using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -13,6 +15,12 @@ namespace Character
             _animator = GetComponentInChildren<Animator>();
             
             Assert.IsNotNull(_animator, "The character must have an Animator component as a child.");
+        }
+
+        private void Update()
+        {
+            // Passivly restore stamina
+            RestoreStamina(staminaRegenAmount * (Time.deltaTime * staminaRegenRate));
         }
 
         /// <summary>
@@ -35,9 +43,14 @@ namespace Character
             _animator.SetTrigger(HasBeenHit);
         }
 
-        public void ExpendStamina(int amount)
+        public void ExpendStamina(float amount)
         {
             CurrentStamina -= amount;
+        }
+
+        public void RestoreStamina(float amount)
+        {
+            CurrentStamina += amount;
         }
         
         private readonly static int HasBeenHit = Animator.StringToHash("hasBeenHit");
@@ -52,16 +65,20 @@ namespace Character
         [Range(0.01f, 1f)]
         public float healthRegenRate;
 
-        [Tooltip("(1 unit per x) where x is the value of this variable.")]
-        [Range(0.01f, 1f)]
+        [Tooltip("(X unit per Y) where Y is the value of this variable and Y is staminaRegenAmount.")]
+        [Range(0f, 2f)]
         public float staminaRegenRate;
+
+        [Tooltip("(X unit per Y) where X is the value of this variable and Y is staminaRegenRate.")]
+        public float staminaRegenAmount;
 
         [Tooltip("(1 unit per x) where x is the value of this variable.")]
         [Range(0.01f, 1f)]
         public float resolveRegenRate;
-
+        
+        
+        public float CurrentStamina { get; private set; }
         private int _currentHealth;
-        public int CurrentStamina { get; private set; }
         private int _currentResolve;
         private Animator _animator;
     }

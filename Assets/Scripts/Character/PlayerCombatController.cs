@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
@@ -23,6 +24,28 @@ namespace Character
             {
                 IsAttacking = false;
             };
+        }
+
+        private void Update()
+        {
+            UpdateUIStatusElements();
+
+            // Stamina Drain When Blocking
+            if (isBlocking)
+                _rpgSystem.ExpendStamina(blockingStaminaDrain * (Time.deltaTime * blockingStaminaDrainRate));
+            
+            // Exit out of blocking when we run out of stamina
+            if (isBlocking && !HasEnoughStaminaToPerformAction(ref blockingStaminaDrain))
+            {
+                animator.ResetTrigger(Blocking);
+                animator.SetBool(IsBlocking, false);
+                isBlocking = false;
+            }
+        }
+
+        private void UpdateUIStatusElements()
+        {
+            playerStaminaText.text = "Stamina: " + (int)_rpgSystem.CurrentStamina;
         }
 
         /// <summary>
@@ -123,7 +146,8 @@ namespace Character
         /// the InputManager events system.
         public void StartBlocking(InputAction.CallbackContext context)
         {
-            if (context.performed && GetComponent<PlayerMovementController>().IsPlayerGrounded)
+            if (context.performed && GetComponent<PlayerMovementController>().IsPlayerGrounded 
+                                  && HasEnoughStaminaToPerformAction(ref blockingStaminaDrain))
             {
                 animator.SetTrigger(Blocking);
                 animator.SetBool(IsBlocking, true);
@@ -140,14 +164,12 @@ namespace Character
 
         public void StartComboAttackTimer()
         {
-            _comboAttackTimer = maxComboAttackTime;
             _isWithinComboAttackTimingRange = true;
         }
 
         public void EndComboAttackTimer()
         {
             _isWithinComboAttackTimingRange = false;
-            _comboAttackTimer = maxComboAttackTime;
             animator.SetTrigger(ComboFailed);
             IsAttacking = false;
         }
@@ -170,6 +192,24 @@ namespace Character
             };
         }
 
+        /// <summary>
+        /// Determines if the player has enough stamina to perform an action.
+        /// </summary>
+        /// <param name="staminaCost">The amount of stamina required to perform the action.</param>
+        /// <returns>
+        /// Returns <c>true</c> if the player has sufficient stamina to perform the action; otherwise, <c>false</c>.
+        /// </returns>
+        private bool HasEnoughStaminaToPerformAction(ref float staminaCost)
+        {
+            if (_rpgSystem.CurrentStamina <= 0)
+                return false;
+
+            if (_rpgSystem.CurrentStamina - staminaCost >= 0)
+                return true;
+
+            return false;
+        }
+        
         private enum SwordAttackState
         {
             FirstAttack = 1,
@@ -180,10 +220,7 @@ namespace Character
         private SwordAttackState _nextSwordAttackState;
         private SwordAttackState _currentAttackState;
         private PlayerMovementController _playerMovementController;
-        private float _comboAttackTimer;
         private bool _isWithinComboAttackTimingRange;
-
-        [HideInInspector] public bool isPlayingAttackAnimation;
 
         [HideInInspector] public bool isBlocking;
 
@@ -195,17 +232,24 @@ namespace Character
         private readonly static int Blocking = Animator.StringToHash("startBlocking");
         private readonly static int IsBlocking = Animator.StringToHash("isBlocking");
 
-        [Header("Attack Properties")]
         public bool IsAttacking { get; private set; }
 
         public float SwordAttackRange { get; private set; }
 
-        [Header("Attack Combo")]
 
+        [Header("Attack Combo")]
         public int ComboAttack1Damage;
         public int ComboAttack2Damage;
         public int ComboAttack3Damage;
 
+        [Header("Attack Properties")]
+        
+        [SerializeField] [Tooltip("The amount of stamina that is expended during blocking.")]
+        private float blockingStaminaDrain;
+
+        [SerializeField] [Tooltip("The rate at which stamina is drained during blocking.")] [Range(0f, 2f)]
+        private float blockingStaminaDrainRate;
+        
         [SerializeField]
         private int swordAttackStaminaCost;
 
@@ -230,5 +274,12 @@ namespace Character
         private Animator animator;
 
         private RPGSystem _rpgSystem;
+        
+                
+        [SerializeField]
+        private TextMeshProUGUI playerHealthText;
+
+        [SerializeField]
+        private TextMeshProUGUI playerStaminaText;
     }
 }
