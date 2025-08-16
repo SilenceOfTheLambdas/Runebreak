@@ -30,22 +30,34 @@ namespace Character
         {
             UpdateUIStatusElements();
 
-            // Stamina Drain When Blocking
+            #region Stamina Drain when Blocking
+
             if (isBlocking)
-                _rpgSystem.ExpendStamina(blockingStaminaDrain * (Time.deltaTime * blockingStaminaDrainRate));
-            
-            // Exit out of blocking when we run out of stamina
-            if (isBlocking && !HasEnoughStaminaToPerformAction(ref blockingStaminaDrain))
             {
-                animator.ResetTrigger(Blocking);
-                animator.SetBool(IsBlocking, false);
-                isBlocking = false;
+                _blockingStaminaExpendTimer += Time.deltaTime;
+                if (_blockingStaminaExpendTimer >= blockingStaminaDrainRate)
+                {
+                    _rpgSystem.ExpendStamina(blockingStaminaDrain);
+                    _blockingStaminaExpendTimer = 0f;
+                }
+
+                // Stop blocking when player runs out of stamina
+                if (!HasEnoughStaminaToPerformAction(blockingStaminaDrain))
+                {
+                    animator.ResetTrigger(Blocking);
+                    animator.SetBool(IsBlocking, false);
+                    _blockingStaminaExpendTimer = 0f;
+                    isBlocking = false;
+                }
             }
+
+            #endregion
         }
 
         private void UpdateUIStatusElements()
         {
-            playerStaminaText.text = "Stamina: " + (int)_rpgSystem.CurrentStamina;
+            playerStaminaText.text = "Stamina: " + _rpgSystem.CurrentStamina;
+            playerHealthText.text = "Health: " + _rpgSystem.CurrentHealth;
         }
 
         /// <summary>
@@ -147,7 +159,7 @@ namespace Character
         public void StartBlocking(InputAction.CallbackContext context)
         {
             if (context.performed && GetComponent<PlayerMovementController>().IsPlayerGrounded 
-                                  && HasEnoughStaminaToPerformAction(ref blockingStaminaDrain))
+                                  && HasEnoughStaminaToPerformAction(blockingStaminaDrain))
             {
                 animator.SetTrigger(Blocking);
                 animator.SetBool(IsBlocking, true);
@@ -199,7 +211,7 @@ namespace Character
         /// <returns>
         /// Returns <c>true</c> if the player has sufficient stamina to perform the action; otherwise, <c>false</c>.
         /// </returns>
-        private bool HasEnoughStaminaToPerformAction(ref float staminaCost)
+        private bool HasEnoughStaminaToPerformAction(float staminaCost)
         {
             if (_rpgSystem.CurrentStamina <= 0)
                 return false;
@@ -219,25 +231,25 @@ namespace Character
 
         private SwordAttackState _nextSwordAttackState;
         private SwordAttackState _currentAttackState;
-        private PlayerMovementController _playerMovementController;
         private bool _isWithinComboAttackTimingRange;
+        private float _blockingStaminaExpendTimer;
 
         [HideInInspector] public bool isBlocking;
 
-        private readonly static int SwordAttackSpeed = Animator.StringToHash("swordAttackSpeed");
-        private readonly static int ComboAttack1 = Animator.StringToHash("combo1");
-        private readonly static int ComboAttack2 = Animator.StringToHash("combo2");
-        private readonly static int ComboAttack3 = Animator.StringToHash("combo3");
-        private readonly static int ComboFailed = Animator.StringToHash("comboFailed");
-        private readonly static int Blocking = Animator.StringToHash("startBlocking");
-        private readonly static int IsBlocking = Animator.StringToHash("isBlocking");
+        private static readonly int SwordAttackSpeed = Animator.StringToHash("swordAttackSpeed");
+        private static readonly int ComboAttack1 = Animator.StringToHash("combo1");
+        private static readonly int ComboAttack2 = Animator.StringToHash("combo2");
+        private static readonly int ComboAttack3 = Animator.StringToHash("combo3");
+        private static readonly int ComboFailed = Animator.StringToHash("comboFailed");
+        private static readonly int Blocking = Animator.StringToHash("startBlocking");
+        private static readonly int IsBlocking = Animator.StringToHash("isBlocking");
 
         public bool IsAttacking { get; private set; }
 
         public float SwordAttackRange { get; private set; }
 
 
-        [Header("Attack Combo")]
+        [Header("Attack Combo Damage Values")]
         public int ComboAttack1Damage;
         public int ComboAttack2Damage;
         public int ComboAttack3Damage;
@@ -250,6 +262,7 @@ namespace Character
         [SerializeField] [Tooltip("The rate at which stamina is drained during blocking.")] [Range(0f, 2f)]
         private float blockingStaminaDrainRate;
         
+        [Space]
         [SerializeField]
         private int swordAttackStaminaCost;
 
@@ -257,29 +270,25 @@ namespace Character
         private float attackSpeed;
 
         [SerializeField]
+        private float swordAttackRange;
+        
+        [SerializeField]
         private float maxComboAttackTime;
 
-        [SerializeField]
-        private float swordAttackRange;
-
-        [SerializeField]
-        private int swordDamage;
-
         [Header("Object References")]
-        
         [SerializeField] 
         private InputActionReference swordAttackInputAction;
 
         [SerializeField]
         private Animator animator;
-
-        private RPGSystem _rpgSystem;
         
-                
         [SerializeField]
         private TextMeshProUGUI playerHealthText;
 
         [SerializeField]
         private TextMeshProUGUI playerStaminaText;
+        
+        private RPGSystem _rpgSystem;
+        private PlayerMovementController _playerMovementController;
     }
 }
