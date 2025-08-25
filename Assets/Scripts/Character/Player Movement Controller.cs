@@ -178,12 +178,12 @@ namespace Character
 
         public static MoveActionTypes MovementType;
         
-        private readonly static int VelocityX = Animator.StringToHash("VelocityX");
-        private readonly static int DecelerationX = Animator.StringToHash("DecelerationX");
-        private readonly static int IsRunning = Animator.StringToHash("isRunning");
-        private readonly static int IsJumping = Animator.StringToHash("isJumping");
-        private readonly static int VelocityY = Animator.StringToHash("VelocityY");
-        private readonly static int Speed = Animator.StringToHash("Speed");
+        private static readonly int VelocityX = Animator.StringToHash("VelocityX");
+        private static readonly int DecelerationX = Animator.StringToHash("DecelerationX");
+        private static readonly int IsRunning = Animator.StringToHash("isRunning");
+        private static readonly int IsJumping = Animator.StringToHash("isJumping");
+        private static readonly int VelocityY = Animator.StringToHash("VelocityY");
+        private static readonly int Speed = Animator.StringToHash("Speed");
 
         // PUBLIC
         public MoveActionTypes currentMoveAction;

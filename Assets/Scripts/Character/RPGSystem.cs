@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
 namespace Character
 {
@@ -7,8 +8,8 @@ namespace Character
     {
         private void Start()
         {
-            CurrentHealth = maximumHealth;
-            CurrentStamina = maximumStamina;
+            currentHealth = maximumHealth;
+            currentStamina = maximumStamina;
             _currentResolve = maximumResolve;
             _animator = GetComponentInChildren<Animator>();
             
@@ -23,7 +24,7 @@ namespace Character
 
             if (_staminaRegenTimer >= staminaRegenRate)
             {
-                if (CurrentStamina < maximumStamina)
+                if (currentStamina < maximumStamina)
                     RestoreStamina(staminaRegenAmount);
                 _staminaRegenTimer = 0f;
             }
@@ -32,7 +33,7 @@ namespace Character
 
             if (_healthRegenTimer >= healthRegenRate)
             {
-                if (CurrentHealth < maximumHealth)
+                if (currentHealth < maximumHealth)
                     RestoreHealth(healthRegenAmount);
                 _healthRegenTimer = 0f;
             }
@@ -47,7 +48,7 @@ namespace Character
         /// <param name="damage">The amount of damage to take.</param>
         public void ReceiveDamage(int damage)
         {
-            CurrentHealth -= damage;
+            currentHealth -= damage;
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace Character
 
         public void ExpendStamina(float amount)
         {
-            CurrentStamina -= (int) amount;
+            currentStamina -= (int) amount;
         }
 
         /// <summary>
@@ -72,13 +73,13 @@ namespace Character
         /// <param name="amount">The amount of stamina to restore.</param>
         private void RestoreStamina(float amount)
         {
-            if (CurrentStamina + amount > maximumStamina)
+            if (currentStamina + amount > maximumStamina)
             {
-                CurrentStamina = maximumStamina;
+                currentStamina = maximumStamina;
                 return;
             }
             
-            CurrentStamina += (int) amount;
+            currentStamina += (int) amount;
         }
         
         /// <summary>
@@ -87,13 +88,13 @@ namespace Character
         /// <param name="amount">The amount of health to restore.</param>
         private void RestoreHealth(float amount)
         {
-            if (CurrentHealth + amount > maximumHealth)
+            if (currentHealth + amount > maximumHealth)
             {
-                CurrentHealth = maximumHealth;
+                currentHealth = maximumHealth;
                 return;
             }
             
-            CurrentHealth += (int) amount;
+            currentHealth += (int) amount;
         }
         
         private static readonly int HasBeenHit = Animator.StringToHash("hasBeenHit");
@@ -103,6 +104,10 @@ namespace Character
         public int maximumStamina = 20;
         public int maximumResolve = 10;
         public int currentLevel = 1;
+        
+        [field: SerializeField] public int currentStamina { get; private set; }
+        
+        [field: SerializeField] public int currentHealth { get; private set; }
 
         [Space][Header("Regeneration Properties")]
         [Tooltip("(X unit per Y) where Y is the value of this variable.")]
@@ -122,11 +127,6 @@ namespace Character
         [Tooltip("(1 unit per x) where x is the value of this variable.")]
         [Range(0.01f, 1f)]
         public float resolveRegenRate;
-        
-        
-        public int CurrentStamina { get; private set; }
-        
-        public int CurrentHealth { get; private set; }
 
         private int _currentResolve;
         private Animator _animator;

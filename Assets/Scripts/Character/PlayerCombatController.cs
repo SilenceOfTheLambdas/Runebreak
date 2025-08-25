@@ -56,8 +56,8 @@ namespace Character
 
         private void UpdateUIStatusElements()
         {
-            playerStaminaText.text = "Stamina: " + _rpgSystem.CurrentStamina;
-            playerHealthText.text = "Health: " + _rpgSystem.CurrentHealth;
+            playerStaminaText.text = "Stamina: " + _rpgSystem.currentStamina;
+            playerHealthText.text = "Health: " + _rpgSystem.currentHealth;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Character
         /// <param name="context"></param>
         public void StartSwordAttack(InputAction.CallbackContext context)
         {
-            if (_rpgSystem.CurrentStamina >= swordAttackStaminaCost && context.performed)
+            if (_rpgSystem.currentStamina >= swordAttackStaminaCost && context.performed)
             {
                 if (_isWithinComboAttackTimingRange)
                 {
@@ -213,10 +213,10 @@ namespace Character
         /// </returns>
         private bool HasEnoughStaminaToPerformAction(float staminaCost)
         {
-            if (_rpgSystem.CurrentStamina <= 0)
+            if (_rpgSystem.currentStamina <= 0)
                 return false;
 
-            if (_rpgSystem.CurrentStamina - staminaCost >= 0)
+            if (_rpgSystem.currentStamina - staminaCost >= 0)
                 return true;
 
             return false;
