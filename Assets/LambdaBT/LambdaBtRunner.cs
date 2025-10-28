@@ -9,26 +9,26 @@ namespace LambdaBT
         [Space] [Space]
         public LambdaBehaviourTree lambdaBehaviourTree;
 
-        [Header("Blackboard")] [Space] 
-        [field: SerializeField] public LambdaBlackboard blackboard;
-
         private void Start()
         {
             if (lambdaBehaviourTree == null) return;
-            lambdaBehaviourTree.RootNode = lambdaBehaviourTree.ConstructBehaviourTree();
-            lambdaBehaviourTree.RootNode.Init();
             
-            blackboard.PrintBlackboardToConsole();
+            // Construct the behaviour tree and initialize the root node.
+            lambdaBehaviourTree.RootNode = lambdaBehaviourTree.ConstructBehaviourTree();
+            
+            // Initialize the root node to start the behaviour tree execution.
+            lambdaBehaviourTree?.RootNode.Init();
         }
 
         private void Update()
         {
-            lambdaBehaviourTree?.RootNode.ExecuteFrame(Time.deltaTime, blackboard);
+            var status = lambdaBehaviourTree?.RootNode.ExecuteFrame(Time.deltaTime);
+            Debug.Log($"Current State: {lambdaBehaviourTree?.RootNode} :> {status}");
         }
 
         private void FixedUpdate()
         {
-            lambdaBehaviourTree?.RootNode.ExecutePhysics(Time.fixedDeltaTime, blackboard);
+            lambdaBehaviourTree?.RootNode.ExecutePhysics(Time.fixedDeltaTime);
         }
     }
 }

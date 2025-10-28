@@ -13,11 +13,43 @@ MonoBehaviour:
   m_Name: GoblinBB
   m_EditorClassIdentifier: 
   variables:
-  - variableName: Test Value
+  - variableName: ChaseRadius
+    value:
+      variableType: 0
+      floatValue: 5
+      intValue: 0
+      stringValue: 
+      boolValue: 0
+      gameObjectValue: {fileID: 0}
+  - variableName: Edge Detection Length
+    value:
+      variableType: 0
+      floatValue: 3
+      intValue: 0
+      stringValue: 
+      boolValue: 0
+      gameObjectValue: {fileID: 0}
+  - variableName: Number of Edge Detection Rays
     value:
       variableType: 1
-      floatValue: 13459.64
-      intValue: 26
+      floatValue: 3
+      intValue: 3
+      stringValue: 
+      boolValue: 0
+      gameObjectValue: {fileID: 0}
+  - variableName: MovementSpeed
+    value:
+      variableType: 0
+      floatValue: 3
+      intValue: 8
+      stringValue: 
+      boolValue: 0
+      gameObjectValue: {fileID: 0}
+  - variableName: Grounded Threshold
+    value:
+      variableType: 0
+      floatValue: 0.2
+      intValue: 2
       stringValue: 
       boolValue: 0
       gameObjectValue: {fileID: 0}

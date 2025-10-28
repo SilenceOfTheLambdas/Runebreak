@@ -14,14 +14,22 @@ namespace LambdaBT.Composite
         public LambdaBtRandomSequence(IEnumerable<LambdaBtNode> children) =>
             _children = new List<LambdaBtNode>(children);
 
-        public override Result ExecuteFrame(float deltaTime, LambdaBlackboard blackboard)
+        public override void Init()
+        {
+            foreach (var child in _children)
+            {
+                child.Init();
+            }
+        }
+
+        public override Result ExecuteFrame(float deltaTime)
         {
             var isAnyNodeRunning = false;
             for (var i = 0; i < _children.Count; i++)
             {
                 var randomIndex = Random.Range(i, _children.Count - 1);
                 var node = _children[randomIndex];
-                switch (node.ExecuteFrame(deltaTime, blackboard))
+                switch (node.ExecuteFrame(deltaTime))
                 {
                     case Result.Running:
                         isAnyNodeRunning = true;
@@ -38,14 +46,14 @@ namespace LambdaBT.Composite
             return isAnyNodeRunning ? Result.Running : Result.Success;
         }
 
-        public override Result ExecutePhysics(float fixedDeltaTime, LambdaBlackboard blackboard)
+        public override Result ExecutePhysics(float fixedDeltaTime)
         {
             var isAnyNodeRunning = false;
             for (var i = 0; i < _children.Count; i++)
             {
                 var randomIndex = Random.Range(i, _children.Count - 1);
                 var node = _children[randomIndex];
-                switch (node.ExecutePhysics(fixedDeltaTime, blackboard))
+                switch (node.ExecutePhysics(fixedDeltaTime))
                 {
                     case Result.Running:
                         isAnyNodeRunning = true;

@@ -671,7 +671,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 2.96875
+  orthographic size: 3.34375
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1652,7 +1652,7 @@ GameObject:
   - component: {fileID: 1572252999}
   m_Layer: 8
   m_Name: Goblin
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1788,7 +1788,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lambdaBehaviourTree: {fileID: 1572252999}
-  blackboard: {fileID: 11400000, guid: 040ad06249768a54cb9e37d5103571b9, type: 2}
 --- !u!114 &1572252999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1801,6 +1800,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c9bd08370ca48f8a88299f035ba5134, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blackboard: {fileID: 11400000, guid: 040ad06249768a54cb9e37d5103571b9, type: 2}
+  instanceValues:
+  - {fileID: 1526526915}
+  - {fileID: 1572252992}
 --- !u!1 &1654141605
 GameObject:
   m_ObjectHideFlags: 0

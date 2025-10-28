@@ -12,12 +12,20 @@ namespace LambdaBT.Composite
 
         public LambdaBtSelector(IEnumerable<LambdaBtNode> children) => _children = new List<LambdaBtNode>(children);
 
-        public override Result ExecuteFrame(float deltaTime, LambdaBlackboard blackboard)
+        public override void Init()
+        {
+            foreach (var child in _children)
+            {
+                child.Init();
+            }
+        }
+
+        public override Result ExecuteFrame(float deltaTime)
         {
             foreach (var node in _children)
             {
                 Debug.Log("Running: " + node);
-                switch (node.ExecuteFrame(deltaTime, blackboard))
+                switch (node.ExecuteFrame(deltaTime))
                 {
                     case Result.Running:
                         return Result.Running;
@@ -34,11 +42,11 @@ namespace LambdaBT.Composite
             return Result.Failure;
         }
 
-        public override Result ExecutePhysics(float fixedDeltaTime, LambdaBlackboard blackboard)
+        public override Result ExecutePhysics(float fixedDeltaTime)
         {
             foreach (var node in _children)
             {
-                switch (node.ExecutePhysics(fixedDeltaTime, blackboard))
+                switch (node.ExecutePhysics(fixedDeltaTime))
                 {
                     case Result.Running:
                         return Result.Running;

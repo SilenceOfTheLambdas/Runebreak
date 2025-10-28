@@ -6,15 +6,20 @@
 
         public LambdaBtRepeater(LambdaBtNode child) => _child = child;
 
-        public override Result ExecuteFrame(float deltaTime, LambdaBlackboard blackboard)
+        public override void Init()
         {
-            _child.ExecuteFrame(deltaTime, blackboard);
+            _child.Init();
+        }
+
+        public override Result ExecuteFrame(float deltaTime)
+        {
+            _child.ExecuteFrame(deltaTime);
             return Result.Running;
         }
 
-        public override Result ExecutePhysics(float fixedDeltaTime, LambdaBlackboard blackboard)
+        public override Result ExecutePhysics(float fixedDeltaTime)
         {
-            _child.ExecutePhysics(fixedDeltaTime, blackboard);
+            _child.ExecutePhysics(fixedDeltaTime);
             return Result.Running;
         }
     }

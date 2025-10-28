@@ -6,9 +6,14 @@
 
         public LambdaBtInverter(LambdaBtNode node) => _node = node;
 
-        public override Result ExecuteFrame(float deltaTime, LambdaBlackboard blackboard)
+        public override void Init()
         {
-            return _node.ExecuteFrame(deltaTime, blackboard) switch
+            
+        }
+
+        public override Result ExecuteFrame(float deltaTime)
+        {
+            return _node.ExecuteFrame(deltaTime) switch
             {
                 Result.Running => Result.Running,
                 Result.Failure => Result.Failure,
@@ -17,9 +22,9 @@
             };
         }
 
-        public override Result ExecutePhysics(float fixedDeltaTime, LambdaBlackboard blackboard)
+        public override Result ExecutePhysics(float fixedDeltaTime)
         {
-            return _node.ExecutePhysics(fixedDeltaTime, blackboard) switch
+            return _node.ExecutePhysics(fixedDeltaTime) switch
             {
                 Result.Running => Result.Running,
                 Result.Failure => Result.Failure,

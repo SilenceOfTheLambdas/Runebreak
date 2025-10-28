@@ -25,7 +25,7 @@ namespace LambdaBT.Helper
             var valueRect = new Rect(position.x, position.y + 2 * (EditorGUIUtility.singleLineHeight + 2),
                 position.width, EditorGUIUtility.singleLineHeight);
             var variableType = (VariableType)variableTypeProperty.enumValueIndex;
-
+            
             switch (variableType)
             {
                 case VariableType.Float:

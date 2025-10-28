@@ -9,6 +9,7 @@ namespace LambdaBT
     {
         public List<LambdaVariable> variables;
 
+        // DEBUGGING!
         public void PrintBlackboardToConsole()
         {
             if (variables.Count > 0)
@@ -26,11 +27,30 @@ namespace LambdaBT
             {
                 foreach (var variable in variables)
                 {
-                    return string.Equals(variable.variableName, varName, StringComparison.CurrentCultureIgnoreCase) ? variable.GetValue() : null;
+                    if (string.Equals(variable.variableName, varName, StringComparison.CurrentCultureIgnoreCase))
+                        return variable.GetValue();
+                }
+            }
+            
+            Debug.LogError($"Variable '{varName}' not found in the blackboard.");
+            return null;
+        }
+
+        public void SetVariableByName(string varName, object value)
+        {
+            if (variables.Count > 0)
+            {
+                foreach (var variable in variables)
+                {
+                    if (string.Equals(variable.variableName, varName, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        variable.SetVariable(value);
+                        return;
+                    }
                 }
             }
 
-            return null;
+            Debug.LogError($"Variable '{varName}' not found in the blackboard.");
         }
     }
 
@@ -58,6 +78,31 @@ namespace LambdaBT
                 VariableType.GameObject => value.gameObjectValue,
                 _ => throw new ArgumentOutOfRangeException()
             };
+        }
+
+        public void SetVariable(object newValue)
+        {
+            switch (newValue)
+            {
+                case float floatValue:
+                    value.floatValue = floatValue;
+                    break;
+                case int intValue:
+                    value.intValue = intValue;
+                    break;
+                case string stringValue:
+                    value.stringValue = stringValue;
+                    break;
+                case bool boolValue:
+                    value.boolValue = boolValue;
+                    break;
+                case GameObject gameObject:
+                    value.gameObjectValue = gameObject;
+                    break;
+                default:
+                    Debug.LogError($"Unsupported type for newValue: {newValue.ToString()}! Not a VariableType.");
+                    break;
+            }
         }
     }
 
